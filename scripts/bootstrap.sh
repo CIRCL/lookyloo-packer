@@ -46,6 +46,8 @@ PATH_TO_LOOKY='/home/looky/lookyloo'
 LOOKY_BASEURL=''
 FQDN='localhost'
 
+export WORKON_HOME=~/lookyloo
+
 echo "--- Installing Lookyloo… ---"
 
 # echo "--- Configuring GRUB ---"
@@ -61,25 +63,36 @@ sudo apt-get -qq update
 
 
 echo "--- Install base packages ---"
-sudo apt-get -y install curl net-tools gcc git make sudo vim zip python3-dev python3-pip > /dev/null 2>&1
+sudo apt-get -y install curl net-tools gcc git make sudo vim zip python3-dev python3-pip python3-virtualenv virtualenvwrapper > /dev/null 2>&1
 
 echo "--- Install docker packages ---"
 sudo apt install docker.io
 sudo docker pull scrapinghub/splash
-sudo docker run -p 8050:8050 -p 5023:5023 scrapinghub/splash --disable-ui --disable-lua
+sudo docker run -d -p 8050:8050 -p 5023:5023 scrapinghub/splash --disable-ui --disable-lua
 
-echo "--- Retrieving Lookyloo ---"
-cd $PATH_TO_LOOKY/..
+echo "--- Retrieving and setting up Lookyloo ---"
+cd ~looky
 sudo -u looky git clone https://github.com/CIRCL/lookyloo.git
 cd $PATH_TO_LOOKY
 sudo -u looky git config core.filemode false
-sudo pip3 install uwsgi
-sudo pip3 install -r requirements.txt
-sudo pip3 install -e .
+mkvirtualenv venv
+pip install uwsgi
+pip install -r requirements.txt
+pip install -e .
 wget https://d3js.org/d3.v4.min.js -O lookyloo/static/d3.v4.min.js
 
 echo "--- Install nginx ---"
 sudo apt install nginx
+
+echo "--- Copying config files ---"
+sudo cp etc/nginx/sites-available/lookyloo /etc/nginx/sites-enabled/
+sudo cp etc/systemd/system/lookyloo.service /etc/systemd/system/
+sed -i "s/<CHANGE_ME>/looky/g" etc/nginx/sites-available/lookyloo
+sed -i "s/<CHANGE_ME>/looky/g" etc/systemd/system/lookyloo.service
+sed -i "s/<MY_VIRTUALENV_PATH>/lookyloo\/venv/g" etc/systemd/system/lookyloo.service
+
+sudo cp etc/nginx/sites-available/lookyloo /etc/nginx/sites-enabled/
+sudo cp etc/systemd/system/lookyloo.service /etc/systemd/system/
 
 echo "\e[32mLookyloo is ready\e[0m"
 echo "Login and passwords for the Lookyloo image are the following:"
