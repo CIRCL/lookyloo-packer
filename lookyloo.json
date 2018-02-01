@@ -15,7 +15,8 @@
         "vm_name": "{{user `vm_name`}}",
 
         "vboxmanage": [
-            ["modifyvm", "{{.Name}}", "--vram", "32"]
+            ["modifyvm", "{{.Name}}", "--vram", "32"],
+            ["modifyvm", "{{.Name}}", "--memory", "2048"]
         ],
 
         "disk_size": "{{user `disk_size`}}",
@@ -53,6 +54,9 @@
         "guest_os_type": "ubuntu-64",
         "vm_name": "{{user `vm_name`}}",
 
+        "vmx_data": {
+            "memsize": "2048"
+        }
         "disk_size": "{{user `disk_size`}}",
 
         "iso_url": "http://releases.ubuntu.com/17.10/ubuntu-17.10.1-server-amd64.iso",
