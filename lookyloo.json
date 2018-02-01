@@ -3,7 +3,7 @@
         "ssh_name": "looky",
         "ssh_pass": "loo",
         "hostname": "ll",
-        "vm_name": "LookyLoo_demo",
+        "vm_name": "Lookyloo_demo",
         "disk_size": "10000"
     },
 
