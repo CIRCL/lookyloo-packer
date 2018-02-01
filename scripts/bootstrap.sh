@@ -36,7 +36,7 @@ LOOKY_BRANCH='master'
 
 # Grub config (reverts network interface names to ethX)
 GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0"
-DEFAULT_GRUB=/etc/default/grub
+DEFAULT_GRUB="/etc/default/grub"
 
 # Ubuntu version
 UBUNTU_VERSION="$(lsb_release -r -s)"
@@ -66,7 +66,7 @@ echo "--- Install base packages ---"
 sudo apt-get -y install curl net-tools gcc git make sudo vim zip python3-dev python3-pip python3-virtualenv virtualenvwrapper > /dev/null 2>&1
 
 echo "--- Install docker packages ---"
-sudo apt install docker.io
+sudo apt-get -y install docker.io
 sudo docker pull scrapinghub/splash
 sudo docker run -d -p 8050:8050 -p 5023:5023 scrapinghub/splash --disable-ui --disable-lua
 
@@ -82,7 +82,7 @@ pip install -e .
 wget https://d3js.org/d3.v4.min.js -O lookyloo/static/d3.v4.min.js
 
 echo "--- Install nginx ---"
-sudo apt install nginx
+sudo apt-get -y install nginx
 
 echo "--- Copying config files ---"
 sudo cp etc/nginx/sites-available/lookyloo /etc/nginx/sites-enabled/
