@@ -32,7 +32,7 @@
 #     return 0
 # }
 
-LOOKY_BRANCH='n/a'
+LOOKY_BRANCH='master'
 
 # Grub config (reverts network interface names to ethX)
 GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0"
