@@ -51,31 +51,31 @@ if [ "${LATEST_COMMIT}" != "$(cat /tmp/lookyloo-latest.sha)" ]; then
   FILE_LIST="LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip output-virtualbox-iso/LOOKY_${VER}@${LATEST_COMMIT}.ova packer_virtualbox-iso_virtualbox-iso_sha1.checksum packer_virtualbox-iso_virtualbox-iso_sha256.checksum packer_virtualbox-iso_virtualbox-iso_sha384.checksum packer_virtualbox-iso_virtualbox-iso_sha512.checksum LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip.sha1 LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip.sha256 LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip.sha384 LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip.sha512"
 
   # Create the latest Looky export directory
-  ssh ${REL_USER}@${REL_SERVER} mkdir -p export/LOOKY_${VER}@${LATEST_COMMIT}
+  ##ssh ${REL_USER}@${REL_SERVER} mkdir -p export/LOOKY_${VER}@${LATEST_COMMIT}
 
   # Sign and transfer files
   for FILE in ${FILE_LIST}; do
     gpg --armor --output ${FILE}.asc --detach-sig ${FILE}
-    rsync -azv --progress ${FILE} ${REL_USER}@${REL_SERVER}:export/LOOKY_${VER}@${LATEST_COMMIT}
-    rsync -azv --progress ${FILE}.asc ${REL_USER}@${REL_SERVER}:export/LOOKY_${VER}@${LATEST_COMMIT}
-    ssh ${REL_USER}@${REL_SERVER} rm export/latest
-    ssh ${REL_USER}@${REL_SERVER} ln -s LOOKY_${VER}@${LATEST_COMMIT} export/latest
-    ssh ${REL_USER}@${REL_SERVER} chmod -R +r export
+    ##rsync -azv --progress ${FILE} ${REL_USER}@${REL_SERVER}:export/LOOKY_${VER}@${LATEST_COMMIT}
+    ##rsync -azv --progress ${FILE}.asc ${REL_USER}@${REL_SERVER}:export/LOOKY_${VER}@${LATEST_COMMIT}
+    ##ssh ${REL_USER}@${REL_SERVER} rm export/latest
+    ##ssh ${REL_USER}@${REL_SERVER} ln -s LOOKY_${VER}@${LATEST_COMMIT} export/latest
+    ##ssh ${REL_USER}@${REL_SERVER} chmod -R +r export
   done
 
-  ssh ${REL_USER}@${REL_SERVER} cd export ; tree -T "Lookyloo VM Images" -H https://www.circl.lu/lookyloo-images/ -o index.html
+  ##ssh ${REL_USER}@${REL_SERVER} cd export ; tree -T "Lookyloo VM Images" -H https://www.circl.lu/lookyloo-images/ -o index.html
 
   # Remove files for next run
-  rm -r output-virtualbox-iso
-  rm -r output-vmware-iso
-  rm *.checksum *.zip *.sha*
+  ##rm -r output-virtualbox-iso
+  ##rm -r output-vmware-iso
+  ##rm *.checksum *.zip *.sha*
   rm lookyloo-deploy.json
-  rm packer_virtualbox-iso_virtualbox-iso_sha1.checksum.asc
-  rm packer_virtualbox-iso_virtualbox-iso_sha256.checksum.asc
-  rm packer_virtualbox-iso_virtualbox-iso_sha384.checksum.asc
-  rm packer_virtualbox-iso_virtualbox-iso_sha512.checksum.asc
-  rm LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip.asc
-  echo ${LATEST_COMMIT} > /tmp/looky-latest.sha
+  ##rm packer_virtualbox-iso_virtualbox-iso_sha1.checksum.asc
+  ##rm packer_virtualbox-iso_virtualbox-iso_sha256.checksum.asc
+  ##rm packer_virtualbox-iso_virtualbox-iso_sha384.checksum.asc
+  ##rm packer_virtualbox-iso_virtualbox-iso_sha512.checksum.asc
+  ##rm LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip.asc
+  echo ${LATEST_COMMIT} > /tmp/lookyloo-latest.sha
 else
   echo "Current Lookyloo version ${VER}@${LATEST_COMMIT} is up to date."
 fi
