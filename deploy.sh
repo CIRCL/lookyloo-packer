@@ -32,11 +32,11 @@ if [ "${LATEST_COMMIT}" != "$(cat /tmp/lookyloo-latest.sha)" ]; then
   # Search and replace for vm_name and make sure we can easily identify the generated VMs
   cat lookyloo.json| sed "s|\"vm_name\": \"Lookyloo_demo\",|\"vm_name\": \"LOOKY_${VER}@${LATEST_COMMIT}\",|" > lookyloo-deploy.json
 
-  # Build vmware VM set
-  /usr/local/bin/packer build -only=vmware-iso lookyloo-deploy.json
-
   # Build virtualbox VM set
   /usr/local/bin/packer build -only=virtualbox-iso lookyloo-deploy.json
+
+  # Build vmware VM set
+  /usr/local/bin/packer build -only=vmware-iso lookyloo-deploy.json
 
   # ZIPup all the vmware stuff
   zip -r LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip  packer_vmware-iso_vmware-iso_sha1.checksum packer_vmware-iso_vmware-iso_sha512.checksum output-vmware-iso

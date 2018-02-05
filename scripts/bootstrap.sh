@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash -e
 
 ## Source of the vercomp function: https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
 # vercomp () {
@@ -79,7 +79,7 @@ sudo cp ${PATH_TO_LOOKY}/etc/rc.local /etc/
 sudo usermod -a -G looky www-data
 sudo chmod g+rw ${PATH_TO_LOOKY}
 sudo -u looky git config core.filemode false
-. /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
+source /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
 mkvirtualenv -p /usr/bin/python3 lookyloo
 pip install uwsgi
 pip install -r requirements.txt
