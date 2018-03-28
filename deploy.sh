@@ -14,6 +14,11 @@ SHA_SUMS="1 256 384 512"
 REL_USER="lookyloo-release"
 REL_SERVER="cpab"
 
+vm_description='MISP, Malware Information Sharing Platform and Threat Sharing, is an open source software solution for collecting, storing, distributing and sharing cyber security indicators and threat about cyber security incidents analysis and malware analysis. MISP is designed by and for incident analysts, security and ICT professionals or malware reverser to support their day-to-day operations to share structured informations efficiently.'
+
+vm_version='master'
+
+
 # Place holder, this fn() should be used to anything signing related
 function signify()
 {
@@ -33,10 +38,10 @@ if [ "${LATEST_COMMIT}" != "$(cat /tmp/lookyloo-latest.sha)" ]; then
   cat lookyloo.json| sed "s|\"vm_name\": \"Lookyloo_demo\",|\"vm_name\": \"LOOKY_${VER}@${LATEST_COMMIT}\",|" > lookyloo-deploy.json
 
   # Build virtualbox VM set
-  /usr/local/bin/packer build -only=virtualbox-iso lookyloo-deploy.json
+  /usr/local/bin/packer build -var "vm_description=${vm_description}" -var "vm_version=${vm_version}" -only=virtualbox-iso lookyloo-deploy.json
 
   # Build vmware VM set
-  /usr/local/bin/packer build -only=vmware-iso lookyloo-deploy.json
+  /usr/local/bin/packer build -var "vm_description=${vm_description}" -var "vm_version=${vm_version}" -only=vmware-iso lookyloo-deploy.json
 
   # ZIPup all the vmware stuff
   zip -r LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip  packer_vmware-iso_vmware-iso_sha1.checksum packer_vmware-iso_vmware-iso_sha512.checksum output-vmware-iso
@@ -53,14 +58,16 @@ if [ "${LATEST_COMMIT}" != "$(cat /tmp/lookyloo-latest.sha)" ]; then
   # Create the latest Looky export directory
   ##ssh ${REL_USER}@${REL_SERVER} mkdir -p export/LOOKY_${VER}@${LATEST_COMMIT}
 
+echo "Uploading, press enter"
+read enter
   # Sign and transfer files
   for FILE in ${FILE_LIST}; do
     gpg --armor --output ${FILE}.asc --detach-sig ${FILE}
-    ##rsync -azv --progress ${FILE} ${REL_USER}@${REL_SERVER}:export/LOOKY_${VER}@${LATEST_COMMIT}
-    ##rsync -azv --progress ${FILE}.asc ${REL_USER}@${REL_SERVER}:export/LOOKY_${VER}@${LATEST_COMMIT}
-    ##ssh ${REL_USER}@${REL_SERVER} rm export/latest
-    ##ssh ${REL_USER}@${REL_SERVER} ln -s LOOKY_${VER}@${LATEST_COMMIT} export/latest
-    ##ssh ${REL_USER}@${REL_SERVER} chmod -R +r export
+    rsync -azv --progress -e "ssh -i $HOME/.ssh/id_rsa_looky" ${FILE} ${REL_USER}@${REL_SERVER}:export/LOOKY_${VER}@${LATEST_COMMIT}
+    rsync -azv --progress -e "ssh -i $HOME/.ssh/id_rsa_looky" ${FILE}.asc ${REL_USER}@${REL_SERVER}:export/LOOKY_${VER}@${LATEST_COMMIT}
+    ssh -i $HOME/.ssh/id_rsa_looky ${REL_USER}@${REL_SERVER} rm export/latest
+    ssh -i $HOME/.ssh/id_rsa_looky ${REL_USER}@${REL_SERVER} ln -s LOOKY_${VER}@${LATEST_COMMIT} export/latest
+    ssh -i $HOME/.ssh/id_rsa_looky ${REL_USER}@${REL_SERVER} chmod -R +r export
   done
 
   ##ssh ${REL_USER}@${REL_SERVER} cd export ; tree -T "Lookyloo VM Images" -H https://www.circl.lu/lookyloo-images/ -o index.html
@@ -68,13 +75,13 @@ if [ "${LATEST_COMMIT}" != "$(cat /tmp/lookyloo-latest.sha)" ]; then
   # Remove files for next run
   ##rm -r output-virtualbox-iso
   ##rm -r output-vmware-iso
-  ##rm *.checksum *.zip *.sha*
+  rm *.checksum *.zip *.sha*
   rm lookyloo-deploy.json
-  ##rm packer_virtualbox-iso_virtualbox-iso_sha1.checksum.asc
-  ##rm packer_virtualbox-iso_virtualbox-iso_sha256.checksum.asc
-  ##rm packer_virtualbox-iso_virtualbox-iso_sha384.checksum.asc
-  ##rm packer_virtualbox-iso_virtualbox-iso_sha512.checksum.asc
-  ##rm LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip.asc
+  rm packer_virtualbox-iso_virtualbox-iso_sha1.checksum.asc
+  rm packer_virtualbox-iso_virtualbox-iso_sha256.checksum.asc
+  rm packer_virtualbox-iso_virtualbox-iso_sha384.checksum.asc
+  rm packer_virtualbox-iso_virtualbox-iso_sha512.checksum.asc
+  rm LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip.asc
   echo ${LATEST_COMMIT} > /tmp/lookyloo-latest.sha
 else
   echo "Current Lookyloo version ${VER}@${LATEST_COMMIT} is up to date."

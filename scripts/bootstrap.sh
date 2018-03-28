@@ -50,6 +50,8 @@ SECRET_KEY="$(openssl rand -hex 32)"
 
 export WORKON_HOME=~/lookyloo
 
+echo "Your current shell is ${SHELL}"
+
 echo "--- Installing Lookyloo… ---"
 
 # echo "--- Configuring GRUB ---"
@@ -79,11 +81,11 @@ sudo cp ${PATH_TO_LOOKY}/etc/rc.local /etc/
 sudo usermod -a -G looky www-data
 sudo chmod g+rw ${PATH_TO_LOOKY}
 sudo -u looky git config core.filemode false
-source /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
-mkvirtualenv -p /usr/bin/python3 lookyloo
-pip install uwsgi
-pip install -r requirements.txt
-pip install -e .
+##. /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+##mkvirtualenv -p /usr/bin/python3 lookyloo
+##pip install uwsgi
+##pip install -r requirements.txt
+##pip install -e .
 wget https://d3js.org/d3.v4.min.js -O lookyloo/static/d3.v4.min.js
 
 echo "--- Install nginx ---"
@@ -95,11 +97,15 @@ sudo cp etc/systemd/system/lookyloo.service /etc/systemd/system/
 sed -i "s/<CHANGE_ME>/looky/g" etc/nginx/sites-available/lookyloo
 sed -i "s/<CHANGE_ME>/looky/g" etc/systemd/system/lookyloo.service
 sed -i "s/<MY_VIRTUALENV_PATH>/.virtualenvs\/lookyloo/g" etc/systemd/system/lookyloo.service
-sed -i "s/changeme/${SECRET_KEY}/g" lookyloo/__init__.py
+sed -e "0,/changeme/ s/changeme/${SECRET_KEY}/" lookyloo/__init__.py > /tmp/__init__.py
+cat /tmp/__init__.py > lookyloo/__init__.py
+rm /tmp/__init__.py
 
 sudo cp etc/nginx/sites-available/lookyloo /etc/nginx/sites-available/
 sudo cp etc/systemd/system/lookyloo.service /etc/systemd/system/
 sudo ln -sf /etc/nginx/sites-available/lookyloo /etc/nginx/sites-enabled/default
+sudo systemctl start lookyloo
+sudo systemctl enable lookyloo
 
 echo "\e[32mLookyloo is ready\e[0m"
 echo "Login and passwords for the Lookyloo image are the following:"
