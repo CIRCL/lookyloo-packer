@@ -83,6 +83,7 @@ if [ "${LATEST_COMMIT}" != "$(cat /tmp/lookyloo-latest.sha)" ]; then
   rm packer_virtualbox-iso_virtualbox-iso_sha384.checksum.asc
   rm packer_virtualbox-iso_virtualbox-iso_sha512.checksum.asc
   rm LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip.asc
+  rm /tmp/LICENSE
   echo ${LATEST_COMMIT} > /tmp/lookyloo-latest.sha
 else
   echo "Current Lookyloo version ${VER}@${LATEST_COMMIT} is up to date."

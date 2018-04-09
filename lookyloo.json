@@ -26,7 +26,7 @@
         "vboxmanage": [
             ["modifyvm", "{{.Name}}", "--vram", "32"],
             ["modifyvm", "{{.Name}}", "--memory", "2048"],
-            ["modifyvm", "{{.Name}}", "--natpf1", "ssh,tcp,,2222,,22" ],
+            ["modifyvm", "{{.Name}}", "--natpf1", "ssh,tcp,,2222,0.0.0.0,22" ],
             ["modifyvm", "{{.Name}}", "--natpf1", "http,tcp,,8888,,80" ]
         ],
 
@@ -66,28 +66,7 @@
         "vm_name": "{{user `vm_name`}}",
 
         "vmx_data": {
-            "memsize": "2048",
-            "ethernet0.networkName": "Remote Network",
-            "ethernet0.present": "TRUE",
-            "ethernet0.startConnected": "FALSE",
-            "ethernet0.virtualDev": "e1000",
-            "ethernet0.addressType": "generated",
-            "ethernet0.generatedAddressOffset": "0",
-            "ethernet0.wakeOnPcktRcv": "FALSE",
-            "ethernet1.networkName": "Local Network",
-            "ethernet1.present": "TRUE",
-            "ethernet1.startConnected": "FALSE",
-            "ethernet1.virtualDev": "e1000",
-            "ethernet1.addressType": "generated",
-            "ethernet1.generatedAddressOffset": "0",
-            "ethernet1.wakeOnPcktRcv": "FALSE",
-            "ethernet2.connectiontype": "nat",
-            "ethernet2.present": "TRUE",
-            "ethernet2.startConnected": "TRUE",
-            "ethernet2.virtualDev": "e1000",
-            "ethernet2.addressType": "generated",
-            "ethernet2.generatedAddressOffset": "0",
-            "ethernet2.wakeOnPcktRcv": "FALSE"
+            "memsize": "2048"
         },
         "disk_size": "{{user `disk_size`}}",
 
