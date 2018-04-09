@@ -65,7 +65,6 @@ echo "--- Installing Lookyloo… ---"
 echo "--- Updating packages list ---"
 sudo apt-get -qq update
 
-
 echo "--- Install base packages ---"
 sudo apt-get -y install curl net-tools gcc git make sudo vim zip python3-dev python3-pip python3-virtualenv virtualenvwrapper > /dev/null 2>&1
 
@@ -76,34 +75,30 @@ sudo docker pull scrapinghub/splash
 echo "--- Retrieving and setting up Lookyloo ---"
 cd ~looky
 sudo -u looky git clone https://github.com/SteveClement/lookyloo.git
+sudo -u looky mkdir ~/.virtualenvs
+sudo -u looky ln -s ${PATH_TO_LOOKY}/venv ~/.virtualenvs/lookyloo
 cd $PATH_TO_LOOKY
 sudo cp ${PATH_TO_LOOKY}/etc/rc.local /etc/
 sudo usermod -a -G looky www-data
 sudo chmod g+rw ${PATH_TO_LOOKY}
 sudo -u looky git config core.filemode false
-##. /usr/share/virtualenvwrapper/virtualenvwrapper.sh
-##mkvirtualenv -p /usr/bin/python3 lookyloo
-##pip install uwsgi
-##pip install -r requirements.txt
-##pip install -e .
-wget https://d3js.org/d3.v4.min.js -O lookyloo/static/d3.v4.min.js
+sudo ${PATH_TO_LOOKY}/install_dependencies.sh
 
 echo "--- Install nginx ---"
 sudo apt-get -y install nginx
 
 echo "--- Copying config files ---"
-sudo cp etc/nginx/sites-available/lookyloo /etc/nginx/sites-enabled/
-sudo cp etc/systemd/system/lookyloo.service /etc/systemd/system/
-sed -i "s/<CHANGE_ME>/looky/g" etc/nginx/sites-available/lookyloo
-sed -i "s/<CHANGE_ME>/looky/g" etc/systemd/system/lookyloo.service
-sed -i "s/<MY_VIRTUALENV_PATH>/.virtualenvs\/lookyloo/g" etc/systemd/system/lookyloo.service
-sed -e "0,/changeme/ s/changeme/${SECRET_KEY}/" lookyloo/__init__.py > /tmp/__init__.py
-cat /tmp/__init__.py > lookyloo/__init__.py
+sed -i "s/<CHANGE_ME>/looky/g" $PATH_TO_LOOKY/etc/nginx/sites-available/lookyloo
+sed -i "s/<CHANGE_ME>/looky/g" $PATH_TO_LOOKY/etc/systemd/system/lookyloo.service
+sed -i "s/<MY_VIRTUALENV_PATH>/.virtualenvs\/lookyloo/g" $PATH_TO_LOOKY/etc/systemd/system/lookyloo.service
+sed -e "0,/changeme/ s/changeme/${SECRET_KEY}/" $PATH_TO_LOOKY/lookyloo/__init__.py > /tmp/__init__.py
+cat /tmp/__init__.py | sudo tee $PATH_TO_LOOKY/lookyloo/__init__.py
 rm /tmp/__init__.py
-
-sudo cp etc/nginx/sites-available/lookyloo /etc/nginx/sites-available/
-sudo cp etc/systemd/system/lookyloo.service /etc/systemd/system/
+sudo cp $PATH_TO_LOOKY/etc/nginx/sites-available/lookyloo /etc/nginx/sites-available/
+sudo cp $PATH_TO_LOOKY/etc/systemd/system/lookyloo.service /etc/systemd/system/
 sudo ln -sf /etc/nginx/sites-available/lookyloo /etc/nginx/sites-enabled/default
+sudo chgrp -R www-data ~looky
+sudo chmod -R g+rw ~looky
 sudo systemctl start lookyloo
 sudo systemctl enable lookyloo
 

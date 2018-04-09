@@ -18,13 +18,16 @@
           [
             "--manifest",
             "--vsys", "0",
+            "--eulafile", "/tmp/LICENSE",
             "--description", "{{user `vm_description`}}",
             "--version", "{{user `vm_version`}}"
           ],
 
         "vboxmanage": [
             ["modifyvm", "{{.Name}}", "--vram", "32"],
-            ["modifyvm", "{{.Name}}", "--memory", "2048"]
+            ["modifyvm", "{{.Name}}", "--memory", "2048"],
+            ["modifyvm", "{{.Name}}", "--natpf1", "ssh,tcp,,2222,,22" ],
+            ["modifyvm", "{{.Name}}", "--natpf1", "http,tcp,,8888,,80" ]
         ],
 
         "disk_size": "{{user `disk_size`}}",
