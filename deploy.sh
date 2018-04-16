@@ -17,7 +17,7 @@ REL_SERVER="cpab"
 vm_description='Lookyloo is a web interface allowing to scrape a website and then displays a tree of domains calling each other.'
 
 # Fetching latest MISP LICENSE
-/usr/bin/wget -q -O /tmp/LICENSE https://raw.githubusercontent.com/CIRCL/LookyLoo/master/LICENSE
+/usr/bin/wget -q -O /tmp/LICENSE-looky https://raw.githubusercontent.com/CIRCL/LookyLoo/master/LICENSE
 
 vm_version='master'
 
@@ -83,7 +83,7 @@ if [ "${LATEST_COMMIT}" != "$(cat /tmp/lookyloo-latest.sha)" ]; then
   rm packer_virtualbox-iso_virtualbox-iso_sha384.checksum.asc
   rm packer_virtualbox-iso_virtualbox-iso_sha512.checksum.asc
   rm LOOKY_${VER}@${LATEST_COMMIT}-vmware.zip.asc
-  rm /tmp/LICENSE
+  rm /tmp/LICENSE-looky
   echo ${LATEST_COMMIT} > /tmp/lookyloo-latest.sha
 else
   echo "Current Lookyloo version ${VER}@${LATEST_COMMIT} is up to date."
