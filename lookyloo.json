@@ -18,7 +18,7 @@
         "http_proxy": "{{env `http_proxy`}}",
         "https_proxy": "{{env `https_proxy`}}",
         "hostname": "ll",
-        "vm_version": "2.4",
+        "vm_version": "0.1",
         "vm_description": "MISP, is an open source software solution for collecting, storing, distributing and sharing cyber security indicators and threat about cyber security incidents analysis and malware analysis. MISP is designed by and for incident analysts, security and ICT professionals or malware reverser to support their day-to-day operations to share structured informations efficiently.",
         "vm_name": "Lookyloo_demo",
         "disk_size": "10000",
