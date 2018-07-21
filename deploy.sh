@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Latest version of Lookyloo
+# Latest version of Lookyloo, tags disabled as not maintained.
 ##VER=$(curl -s https://api.github.com/repos/CIRCL/lookyloo/tags  |jq -r '.[0] | .name')
 VER='master'
 # Latest commit hash of Lookyloo
@@ -10,16 +10,36 @@ touch /tmp/lookyloo-latest.sha
 # SHAsums to be computed
 SHA_SUMS="1 256 384 512"
 
+PACKER_NAME="lookyloo"
+PACKER_VM="LOOKYLOO"
+NAME="lookyloo-packer"
+
 # Configure your user and remote server
+REMOTE=1
 REL_USER="lookyloo-release"
 REL_SERVER="cpab"
 
+# GPG Sign
+GPG_ENABLED=0
+GPG_KEY="0x9BE4AEE9"
+
+# Enable debug for packer, omit -debug to disable
+##PACKER_DEBUG="-debug"
+
+# Enable logging for packer
+PACKER_LOG=1
+
+# Make sure we have a current work directory
+PWD=`pwd`
+
+# Make sure log dir exists (-p quiets if exists)
+mkdir -p ${PWD}/log
+
 vm_description='Lookyloo is a web interface allowing to scrape a website and then displays a tree of domains calling each other.'
-
-# Fetching latest MISP LICENSE
-/usr/bin/wget -q -O /tmp/LICENSE-looky https://raw.githubusercontent.com/CIRCL/LookyLoo/master/LICENSE
-
 vm_version='master'
+
+# Fetching latest LookyLoo LICENSE
+/usr/bin/wget -q -O /tmp/LICENSE-looky https://raw.githubusercontent.com/CIRCL/LookyLoo/master/LICENSE
 
 
 # Place holder, this fn() should be used to anything signing related
