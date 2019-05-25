@@ -75,6 +75,8 @@
         "ssh_password": "{{user `ssh_pass`}}",
         "ssh_wait_timeout": "20m",
         "ssh_pty" : "true",
+        "type": "virtualbox-iso",
+        "vm_name": "{{user `vm_name`}}",
 
         "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now",
 
@@ -136,9 +138,7 @@
             "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
             "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
             "initrd=/install/initrd.gz -- <enter>"
-        ],
-
-        "skip_compaction": false
+        ]
     }
 	],
 
@@ -161,12 +161,5 @@
         "execute_command" : "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
         "script": "scripts/bootstrap.sh",
         "pause_before": "10s"
-    }],
-
-    "post-processors":[{
-        "keep_input_artifact": "false",
-        "keep_input_artifact": false,
-        "type": "checksum",
-        "checksum_types": ["sha1", "sha256", "sha384", "sha512"]
-    }]
+      }]
 }
