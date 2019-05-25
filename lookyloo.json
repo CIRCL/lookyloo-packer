@@ -2,39 +2,40 @@
     "_comment": "LookyLoo VM Autogen packer build system",
     "variables": {
         "boot_command_prefix": "<enter><wait><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "cpus": "1",
+        "desktop": "false",
+        "disk_size": "25000",
+        "headless": "true",
+        "hostname": "ll",
+        "http_proxy": "{{env `http_proxy`}}",
+        "https_proxy": "{{env `https_proxy`}}",
+        "iso_checksum": "57c3a25f2c5fd61596ce39afbff44dd49b0089a2",
+        "iso_checksum_type": "sha1",
+        "iso_name": "ubuntu-18.04.2-server-amd64.iso",
+        "iso_path": "iso",
+        "iso_url": "http://cdimage.ubuntu.com/ubuntu/releases/bionic/release/ubuntu-18.04.2-server-amd64.iso",
+        "memory": "2048",
+        "no_proxy": "{{env `no_proxy`}}",
+        "ovftool_path": "ovftool",
         "preseed":"preseed.cfg",
         "ssh_fullname": "looky",
         "ssh_name": "looky",
         "ssh_pass": "loo",
-        "iso_checksum": "73ae6579ef7c51d944a0be5c4c48f748bfd689df",
-        "iso_checksum_type": "sha1",
-        "iso_name": "ubuntu-18.04-server-amd64.iso",
-        "iso_path": "iso",
-        "iso_url": "http://cdimage.ubuntu.com/ubuntu/releases/bionic/release/ubuntu-18.04-server-amd64.iso",
-        "desktop": "false",
         "update": "true",
-        "headless": "true",
-        "no_proxy": "{{env `no_proxy`}}",
-        "http_proxy": "{{env `http_proxy`}}",
-        "https_proxy": "{{env `https_proxy`}}",
-        "hostname": "ll",
-        "vm_version": "0.1",
         "vm_description": " Lookyloo is a web interface allowing to scrape a website and then displays a tree of domains calling each other.",
         "vm_name": "Lookyloo_demo",
-        "disk_size": "10000",
-        "memory": "2048",
-        "cpus": "1"
+        "vm_version": "0.1"
     },
 
     "builders": [{
+        "disk_size": "{{user `disk_size`}}",
+        "format": "ova",
+        "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+        "guest_os_type": "Ubuntu_64",
+        "hard_drive_interface": "sata",
         "type": "virtualbox-iso",
         "headless": "{{user `headless`}}",
-        "guest_os_type": "Ubuntu_64",
-        "format": "ova",
         "vm_name": "{{user `vm_name`}}",
-
-        "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
-
 
         "export_opts":
           [
@@ -55,10 +56,6 @@
             ["modifyvm", "{{.Name}}", "--cpus", "{{user `cpus`}}"],
             ["modifyvm", "{{.Name}}", "--vram", "32"]
         ],
-
-        "disk_size": "{{user `disk_size`}}",
-
-        "hard_drive_interface": "sata",
 
         "iso_checksum": "{{ user `iso_checksum` }}",
         "iso_checksum_type": "{{ user `iso_checksum_type` }}",
@@ -95,6 +92,7 @@
             "passwd/user-password={{ user `ssh_password` }} ",
             "passwd/user-password-again={{ user `ssh_password` }} ",
             "passwd/username={{ user `ssh_username` }} ",
+            "debconf/frontend=noninteractive ",
             "-- <enter>"
         ]
     },
