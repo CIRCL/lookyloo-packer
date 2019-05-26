@@ -41,7 +41,7 @@ SHA_SUMS="--sha1 --sha256 --sha384 --sha512"
 
 PACKER_NAME="lookyloo"
 PACKER_VM="LOOKYLOO"
-NAME="lookyloo-packer"
+NAME="${PACKER_NAME}-packer"
 
 NAME_OF_INSTALLER="INSTALL.sh"
 PATH_TO_INSTALLER="scripts/${NAME_OF_INSTALLER}"
@@ -73,7 +73,7 @@ PWD=`pwd`
 mkdir -p ${PWD}/log
 
 vm_description='Lookyloo is a web interface allowing to scrape a website and then displays a tree of domains calling each other.'
-vm_version='master'
+vm_version=${BRANCH}
 
 
 
@@ -177,7 +177,7 @@ removeAll () {
   rm -f *.zip *.zip.asc *.sfv *.sfv.asc *.ova *.ova.asc index.html
   rm ${PACKER_NAME}-deploy.json
   rm /tmp/LICENSE-${PACKER_NAME}
-  rm /tmp/vbox.done /tmp/vmware.done
+  rm /tmp/${PACKER_NAME}-vbox.done /tmp/${PACKER_NAME}-vmware.done
 }
 
 # TODO: Make it more graceful if files do not exist
@@ -189,10 +189,12 @@ removeAll 2> /dev/null
 # Make sure the installer we run is the one that is currently on GitHub
 if [[ -e ${PATH_TO_INSTALLER} ]]; then
   echo "Checking checksums"
-  checkInstaller
+  # ToDo: Implement real installer
+  #checkInstaller
 else
   /usr/bin/wget -q -O ${PATH_TO_INSTALLER} ${URL_TO_INSTALLER}
-  checkInstaller
+  # ToDo: Implement real installer
+  #checkInstaller
 fi
 
 # Check if latest build is still up to date, if not, roll and deploy new
@@ -200,22 +202,22 @@ if [[ "${LATEST_COMMIT}" != "$(cat /tmp/${PACKER_NAME}-latest.sha)" ]]; then
   echo "Current ${PACKER_VM} version is: ${VER}@${LATEST_COMMIT_SHORT}"
 
   # Search and replace for vm_name and make sure we can easily identify the generated VMs
-  cat ${PACKER_NAME}.json| sed "s|\"vm_name\": \"MISP_demo\",|\"vm_name\": \"${PACKER_VM}_${VER}@${LATEST_COMMIT_SHORT}\",|" > ${PACKER_NAME}-deploy.json
+  cat ${PACKER_NAME}.json| sed "s|\"vm_name\": \"${PACKER_VM}_demo\",|\"vm_name\": \"${PACKER_VM}_${VER}@${LATEST_COMMIT_SHORT}\",|" > ${PACKER_NAME}-deploy.json
 
   # Build virtualbox VM set
   PACKER_LOG_PATH="${PWD}/packerlog-vbox.txt"
-  ($PACKER_RUN build --on-error=cleanup -var "vm_description=${vm_description}" -var "vm_version=${vm_version}" -only=virtualbox-iso ${PACKER_NAME}-deploy.json ; echo $? > /tmp/vbox.done) &
+  ($PACKER_RUN build --on-error=cleanup -var "vm_description=${vm_description}" -var "vm_version=${vm_version}" -only=virtualbox-iso ${PACKER_NAME}-deploy.json ; echo $? > /tmp/${PACKER_NAME}-vbox.done) &
 
   # Build vmware VM set
   PACKER_LOG_PATH="${PWD}/packerlog-vmware.txt"
-  ($PACKER_RUN build --on-error=cleanup -var "vm_description=${vm_description}" -var "vm_version=${vm_version}" -only=vmware-iso ${PACKER_NAME}-deploy.json ; echo $? > /tmp/vmware.done) &
+  ($PACKER_RUN build --on-error=cleanup -var "vm_description=${vm_description}" -var "vm_version=${vm_version}" -only=vmware-iso ${PACKER_NAME}-deploy.json ; echo $? > /tmp/${PACKER_NAME}-vmware.done) &
 
   # The below waits for the above 2 parallel packer builds to finish
-  while [[ ! -f /tmp/vmware.done ]]; do :; done
-  while [[ ! -f /tmp/vbox.done   ]]; do :; done
+  while [[ ! -f /tmp/${PACKER_NAME}-vmware.done ]]; do :; done
+  while [[ ! -f /tmp/${PACKER_NAME}-vbox.done   ]]; do :; done
 
   # Prevent uploading only half a build
-  if [[ "$(cat /tmp/vbox.done)" == "0" ]] && [[ "$(cat /tmp/vmware.done)" == "0" ]]; then
+  if [[ "$(cat /tmp/${PACKER_NAME}-vbox.done)" == "0" ]] && [[ "$(cat /tmp/${PACKER_NAME}-vmware.done)" == "0" ]]; then
     # ZIPup all the vmware stuff
     mv output-vmware-iso VMware
     cd VMware
@@ -280,7 +282,7 @@ if [[ "${LATEST_COMMIT}" != "$(cat /tmp/${PACKER_NAME}-latest.sha)" ]]; then
     TIME_END=$(date +%s)
     TIME_DELTA=$(expr ${TIME_END} - ${TIME_START})
     TIME=$(convertSecs ${TIME_DELTA})
-    echo "The last generation took ${TIME}" |tee /tmp/lastBuild.time
+    echo "The last generation took ${TIME}" |tee /tmp/${PACKER_NAME}-lastBuild.time
     exit 1
   fi
 
