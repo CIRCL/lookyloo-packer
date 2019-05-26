@@ -41,7 +41,7 @@
           [
             "--manifest",
             "--vsys", "0",
-            "--eulafile", "/tmp/LICENSE-looky",
+            "--eulafile", "/tmp/LICENSE-lookyloo",
             "--description", "{{user `vm_description`}}",
             "--version", "{{user `vm_version`}}"
           ],

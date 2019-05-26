@@ -36,6 +36,11 @@ if [[ "${VER}" == "" ]] || [[ "${LATEST_COMMIT}" == "" ]] ; then
   exit -1
 fi
 
+# The following aliases should help in case you have multiple ssh priv keys to handle deployment
+alias ssh="ssh -i $HOME/.ssh/id_rsa_looky"
+alias scp="scp -i $HOME/.ssh/id_rsa_looky"
+alias rsync="rsync -e 'ssh -i ~/.ssh/id_rsa_looky'"
+
 # SHAsums to be computed, note the -- notatiation is for ease of use with rhash
 SHA_SUMS="--sha1 --sha256 --sha384 --sha512"
 
